@@ -1,68 +1,43 @@
-# Byte-compiled / optimized / DLL files
+# Python bytecode
 __pycache__/
 *.py[cod]
 *$py.class
 
-# C extensions
-*.so
-
 # Distribution / packaging
-.Python
-build/
-develop-eggs/
 dist/
-downloads/
-eggs/
-.eggs/
-lib/
-lib64/
-parts/
-sdist/
-var/
-wheels/
+build/
 *.egg-info/
-.installed.cfg
-*.egg
 
-# PyInstaller
-*.manifest
-*.spec
+# Virtual environments
+venv/
+env/
+ENV/
 
-# Installer logs
-pip-log.txt
-pip-delete-this-directory.txt
-
-# Unit test / coverage reports
-htmlcov/
-.tox/
-.coverage
-.coverage.*
-.cache
-nosetests.xml
-coverage.xml
-*.cover
-.hypothesis/
+# IDE files
+.idea/
+.vscode/
+*.swp
+*.swo
 
 # Jupyter Notebook
 .ipynb_checkpoints
 
-# VS Code
-.vscode/
-*.code-workspace
-
-# PyCharm
-.idea/
-
-# Environments
+# Local configuration
 .env
-.venv
-env/
-venv/
-ENV/
-env.bak/
-venv.bak/
+.env.*
 
-# Models and data
-*.pkl
-*.npy
-*.npz
+# Logs
+*.log
+
+# Dataset files (optional - remove if you want to version control your datasets)
+# *.json
+# *.csv
+
+# Large binary files
+# Uncomment if you don't want to track these
+# *.png
+# *.jpg
+# *.npy
+
+# Project specific
+# Add any other project-specific files to ignore
