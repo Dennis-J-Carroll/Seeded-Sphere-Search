@@ -2,3 +2,15 @@ numpy>=1.19.0
 torch>=1.7.0
 matplotlib>=3.3.0
 scikit-learn>=0.24.0
+pandas>=1.2.0
+seaborn>=0.11.0
+tqdm>=4.50.0
+transformers>=4.5.0
+flask>=2.0.0
+flask-cors>=3.0.0
+# New dependencies for enhanced features
+cachetools>=5.0.0  # For relationship matrix caching
+optuna>=3.0.0  # For hyperparameter optimization
+sentence-transformers>=2.2.0  # For improved embeddings
+pytest>=7.0.0  # For testing
+sphinx>=4.5.0  # For documentation

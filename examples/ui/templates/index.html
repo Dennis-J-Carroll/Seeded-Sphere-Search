@@ -1,0 +1,532 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Seeded Sphere Search Evaluation Platform</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+    <style>
+        body {
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        }
+        .result-card {
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .result-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <div class="max-w-7xl mx-auto px-4 py-8">
+        <header class="mb-8">
+            <h1 class="text-3xl font-bold text-gray-900">Seeded Sphere Search Evaluation Platform</h1>
+            <p class="text-gray-600 mt-2">Evaluate, compare, and visualize search results with advanced analytics</p>
+        </header>
+
+        <!-- Tabs Navigation -->
+        <div class="flex border-b border-gray-200 mb-6">
+            <button data-tab="search" class="py-2 px-4 border-b-2 border-indigo-600 bg-indigo-600 text-white font-medium">
+                Search
+            </button>
+            <button data-tab="analytics" class="py-2 px-4 border-b-2 border-transparent bg-white text-gray-700 font-medium">
+                Analytics
+            </button>
+            <button data-tab="comparison" class="py-2 px-4 border-b-2 border-transparent bg-white text-gray-700 font-medium">
+                Comparison
+            </button>
+            <button data-tab="visualization" class="py-2 px-4 border-b-2 border-transparent bg-white text-gray-700 font-medium">
+                Visualization
+            </button>
+            <button data-tab="sessions" class="py-2 px-4 border-b-2 border-transparent bg-white text-gray-700 font-medium">
+                Sessions
+            </button>
+        </div>
+
+        <!-- Search Tab Content -->
+        <div data-tab-content="search" class="tab-content">
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <!-- Search Panel -->
+                <div class="lg:col-span-1 bg-white p-6 rounded-lg shadow-md">
+                    <h2 class="text-xl font-semibold mb-4">Search Parameters</h2>
+                    
+                    <div class="space-y-4">
+                        <!-- Query Input -->
+                        <div>
+                            <label for="query" class="block text-sm font-medium text-gray-700 mb-1">Search Query</label>
+                            <input 
+                                type="text" 
+                                id="query" 
+                                class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500" 
+                                placeholder="Enter your search query..."
+                            >
+                        </div>
+
+                        <!-- Seed Selection -->
+                        <div>
+                            <label for="seed" class="block text-sm font-medium text-gray-700 mb-1">Seed Document (Optional)</label>
+                            <select 
+                                id="seed" 
+                                class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+                            >
+                                <option value="">No seed document</option>
+                                <!-- Documents will be loaded here -->
+                            </select>
+                        </div>
+
+                        <!-- Advanced Options Toggle -->
+                        <div>
+                            <button 
+                                id="toggle-advanced" 
+                                class="text-sm text-indigo-600 hover:text-indigo-800 focus:outline-none flex items-center"
+                            >
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                                </svg>
+                                Advanced Options
+                            </button>
+                        </div>
+
+                        <!-- Advanced Options (hidden by default) -->
+                        <div id="advanced-options" class="hidden space-y-4 pt-2 border-t border-gray-200">
+                            <!-- Similarity Threshold -->
+                            <div>
+                                <label for="threshold" class="block text-sm font-medium text-gray-700 mb-1">
+                                    Similarity Threshold: <span id="threshold-value">0.70</span>
+                                </label>
+                                <input 
+                                    type="range" 
+                                    id="threshold" 
+                                    min="0" 
+                                    max="1" 
+                                    step="0.05" 
+                                    value="0.7" 
+                                    class="w-full"
+                                >
+                            </div>
+
+                            <!-- Max Results -->
+                            <div>
+                                <label for="max-results" class="block text-sm font-medium text-gray-700 mb-1">
+                                    Max Results: <span id="max-results-value">10</span>
+                                </label>
+                                <input 
+                                    type="range" 
+                                    id="max-results" 
+                                    min="1" 
+                                    max="50" 
+                                    step="1" 
+                                    value="10" 
+                                    class="w-full"
+                                >
+                            </div>
+
+                            <!-- Ellipsoidal Transformation -->
+                            <div class="flex items-center">
+                                <input 
+                                    type="checkbox" 
+                                    id="use-ellipsoidal" 
+                                    class="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
+                                >
+                                <label for="use-ellipsoidal" class="ml-2 block text-sm text-gray-700">
+                                    Use Ellipsoidal Transformation
+                                </label>
+                            </div>
+                        </div>
+
+                        <!-- Session Selection -->
+                        <div>
+                            <label for="session-select" class="block text-sm font-medium text-gray-700 mb-1">Save to Session (Optional)</label>
+                            <select 
+                                id="session-select" 
+                                class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+                            >
+                                <option value="">Don't save to session</option>
+                                <!-- Sessions will be loaded here -->
+                            </select>
+                        </div>
+
+                        <!-- Search Button -->
+                        <button 
+                            id="search-button"
+                            class="w-full bg-indigo-600 text-white py-2 px-4 rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                        >
+                            Search
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Results Panel -->
+                <div class="lg:col-span-2">
+                    <!-- Results Header -->
+                    <div class="flex justify-between items-center mb-4">
+                        <h2 class="text-xl font-semibold text-gray-900">Search Results</h2>
+                        <div id="results-stats" class="text-sm text-gray-600">
+                            <!-- Results stats will be displayed here -->
+                        </div>
+                    </div>
+
+                    <!-- Loading Indicator -->
+                    <div id="loading" class="hidden py-8 text-center">
+                        <div class="inline-block animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-indigo-600"></div>
+                        <p class="mt-2 text-gray-600">Searching...</p>
+                    </div>
+
+                    <!-- Results Container -->
+                    <div id="results-container" class="space-y-4">
+                        <!-- Search results will be displayed here -->
+                        <div class="text-gray-600 text-center py-8">
+                            Enter a search query to see results
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Analytics Tab Content -->
+        <div data-tab-content="analytics" class="tab-content hidden">
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <!-- Analytics Form Panel -->
+                <div class="lg:col-span-1 bg-white p-6 rounded-lg shadow-md">
+                    <h2 class="text-xl font-semibold mb-4">Analytics Parameters</h2>
+                    
+                    <form id="analytics-form" class="space-y-4">
+                        <!-- Query Input -->
+                        <div>
+                            <label for="analytics-query" class="block text-sm font-medium text-gray-700 mb-1">Search Query</label>
+                            <input 
+                                type="text" 
+                                id="analytics-query" 
+                                class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500" 
+                                placeholder="Enter your search query..."
+                            >
+                        </div>
+
+                        <!-- Ground Truth File -->
+                        <div>
+                            <label for="ground-truth-file" class="block text-sm font-medium text-gray-700 mb-1">Ground Truth File (Optional)</label>
+                            <input 
+                                type="file" 
+                                id="ground-truth-file" 
+                                class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+                                accept=".json"
+                            >
+                            <p class="mt-1 text-xs text-gray-500">JSON file with ground truth data</p>
+                        </div>
+
+                        <div class="flex space-x-2">
+                            <!-- Create Ground Truth Button -->
+                            <button 
+                                type="button"
+                                id="create-ground-truth"
+                                class="bg-green-600 text-white py-2 px-4 rounded-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 flex-1"
+                            >
+                                Create Ground Truth
+                            </button>
+
+                            <!-- Run Analytics Button -->
+                            <button 
+                                type="submit"
+                                id="run-analytics"
+                                class="bg-indigo-600 text-white py-2 px-4 rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 flex-1"
+                            >
+                                Run Analytics
+                            </button>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- Analytics Results Panel -->
+                <div class="lg:col-span-2">
+                    <!-- Results Header -->
+                    <div class="flex justify-between items-center mb-4">
+                        <h2 class="text-xl font-semibold text-gray-900">Analytics Results</h2>
+                    </div>
+
+                    <!-- Loading Indicator -->
+                    <div id="analytics-loading" class="hidden py-8 text-center">
+                        <div class="inline-block animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-indigo-600"></div>
+                        <p class="mt-2 text-gray-600">Calculating metrics...</p>
+                    </div>
+
+                    <!-- Results Container -->
+                    <div id="analytics-results" class="space-y-4">
+                        <!-- Analytics results will be displayed here -->
+                        <div class="text-gray-600 text-center py-8">
+                            Run analytics to see metrics and charts
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Comparison Tab Content -->
+        <div data-tab-content="comparison" class="tab-content hidden">
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <!-- Comparison Form Panel -->
+                <div class="lg:col-span-1 bg-white p-6 rounded-lg shadow-md">
+                    <h2 class="text-xl font-semibold mb-4">Comparison Parameters</h2>
+                    
+                    <form id="comparison-form" class="space-y-4">
+                        <!-- Query Input -->
+                        <div>
+                            <label for="comparison-query" class="block text-sm font-medium text-gray-700 mb-1">Search Query</label>
+                            <input 
+                                type="text" 
+                                id="comparison-query" 
+                                class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500" 
+                                placeholder="Enter your search query..."
+                            >
+                        </div>
+
+                        <!-- Algorithms to Compare -->
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Algorithms to Compare</label>
+                            <div class="space-y-2">
+                                <div class="flex items-center">
+                                    <input 
+                                        type="checkbox" 
+                                        id="comparison-standard" 
+                                        checked
+                                        class="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
+                                    >
+                                    <label for="comparison-standard" class="ml-2 block text-sm text-gray-700">
+                                        Standard Search
+                                    </label>
+                                </div>
+                                <div class="flex items-center">
+                                    <input 
+                                        type="checkbox" 
+                                        id="comparison-seeded" 
+                                        class="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
+                                    >
+                                    <label for="comparison-seeded" class="ml-2 block text-sm text-gray-700">
+                                        Seeded Search
+                                    </label>
+                                </div>
+                                <div class="flex items-center">
+                                    <input 
+                                        type="checkbox" 
+                                        id="comparison-ellipsoidal" 
+                                        class="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
+                                    >
+                                    <label for="comparison-ellipsoidal" class="ml-2 block text-sm text-gray-700">
+                                        Ellipsoidal Transformation
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Seed Selection for Seeded Search -->
+                        <div>
+                            <label for="comparison-seed" class="block text-sm font-medium text-gray-700 mb-1">Seed Document (For Seeded Search)</label>
+                            <select 
+                                id="comparison-seed" 
+                                class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+                            >
+                                <option value="">Select a seed document</option>
+                                <!-- Documents will be loaded here -->
+                            </select>
+                        </div>
+
+                        <!-- Run Comparison Button -->
+                        <button 
+                            type="submit"
+                            id="run-comparison"
+                            class="w-full bg-indigo-600 text-white py-2 px-4 rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                        >
+                            Run Comparison
+                        </button>
+                    </form>
+                </div>
+
+                <!-- Comparison Results Panel -->
+                <div class="lg:col-span-2">
+                    <!-- Results Header -->
+                    <div class="flex justify-between items-center mb-4">
+                        <h2 class="text-xl font-semibold text-gray-900">Comparison Results</h2>
+                    </div>
+
+                    <!-- Loading Indicator -->
+                    <div id="comparison-loading" class="hidden py-8 text-center">
+                        <div class="inline-block animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-indigo-600"></div>
+                        <p class="mt-2 text-gray-600">Running comparison...</p>
+                    </div>
+
+                    <!-- Results Container -->
+                    <div id="comparison-results" class="space-y-4">
+                        <!-- Comparison results will be displayed here -->
+                        <div class="text-gray-600 text-center py-8">
+                            Run comparison to see results
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Visualization Tab Content -->
+        <div data-tab-content="visualization" class="tab-content hidden">
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <!-- Visualization Form Panel -->
+                <div class="lg:col-span-1 bg-white p-6 rounded-lg shadow-md">
+                    <h2 class="text-xl font-semibold mb-4">Visualization Parameters</h2>
+                    
+                    <form id="visualization-form" class="space-y-4">
+                        <!-- Method Selection -->
+                        <div>
+                            <label for="visualization-method" class="block text-sm font-medium text-gray-700 mb-1">Visualization Method</label>
+                            <select 
+                                id="visualization-method" 
+                                class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+                            >
+                                <option value="tsne">t-SNE</option>
+                                <option value="pca">PCA</option>
+                                <option value="umap">UMAP</option>
+                            </select>
+                        </div>
+
+                        <!-- Type Selection -->
+                        <div>
+                            <label for="visualization-type" class="block text-sm font-medium text-gray-700 mb-1">Visualization Type</label>
+                            <select 
+                                id="visualization-type" 
+                                class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+                            >
+                                <option value="all">All Documents</option>
+                                <option value="query">Query Results</option>
+                            </select>
+                        </div>
+
+                        <!-- Query Input (for query visualization) -->
+                        <div id="visualization-query-container">
+                            <label for="visualization-query" class="block text-sm font-medium text-gray-700 mb-1">Search Query</label>
+                            <input 
+                                type="text" 
+                                id="visualization-query" 
+                                class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500" 
+                                placeholder="Enter your search query..."
+                            >
+                        </div>
+
+                        <!-- Dimensions Selection -->
+                        <div>
+                            <label for="visualization-dimensions" class="block text-sm font-medium text-gray-700 mb-1">Dimensions</label>
+                            <select 
+                                id="visualization-dimensions" 
+                                class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+                            >
+                                <option value="2">2D</option>
+                                <option value="3">3D</option>
+                            </select>
+                        </div>
+
+                        <!-- Run Visualization Button -->
+                        <button 
+                            type="submit"
+                            id="run-visualization"
+                            class="w-full bg-indigo-600 text-white py-2 px-4 rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                        >
+                            Create Visualization
+                        </button>
+                    </form>
+                </div>
+
+                <!-- Visualization Results Panel -->
+                <div class="lg:col-span-2">
+                    <!-- Results Header -->
+                    <div class="flex justify-between items-center mb-4">
+                        <h2 class="text-xl font-semibold text-gray-900">Embedding Visualization</h2>
+                    </div>
+
+                    <!-- Loading Indicator -->
+                    <div id="visualization-loading" class="hidden py-8 text-center">
+                        <div class="inline-block animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-indigo-600"></div>
+                        <p class="mt-2 text-gray-600">Creating visualization...</p>
+                    </div>
+
+                    <!-- Results Container -->
+                    <div id="visualization-results" class="space-y-4">
+                        <!-- Visualization results will be displayed here -->
+                        <div class="text-gray-600 text-center py-8">
+                            Create a visualization to see results
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Sessions Tab Content -->
+        <div data-tab-content="sessions" class="tab-content hidden">
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <!-- Session Management Panel -->
+                <div class="lg:col-span-1 bg-white p-6 rounded-lg shadow-md">
+                    <h2 class="text-xl font-semibold mb-4">Session Management</h2>
+                    
+                    <div class="space-y-6">
+                        <!-- Create Session -->
+                        <div>
+                            <h3 class="text-lg font-medium text-gray-900 mb-2">Create New Session</h3>
+                            <form id="create-session-form" class="space-y-2">
+                                <div>
+                                    <label for="session-name" class="block text-sm font-medium text-gray-700 mb-1">Session Name</label>
+                                    <input 
+                                        type="text" 
+                                        id="session-name" 
+                                        class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500" 
+                                        placeholder="Enter session name..."
+                                    >
+                                </div>
+                                <button 
+                                    type="submit"
+                                    class="w-full bg-indigo-600 text-white py-2 px-4 rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                                >
+                                    Create Session
+                                </button>
+                            </form>
+                        </div>
+
+                        <!-- Import Session -->
+                        <div>
+                            <h3 class="text-lg font-medium text-gray-900 mb-2">Import Session</h3>
+                            <div class="space-y-2">
+                                <div>
+                                    <label for="import-session" class="block text-sm font-medium text-gray-700 mb-1">Session File</label>
+                                    <input 
+                                        type="file" 
+                                        id="import-session" 
+                                        class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+                                        accept=".json"
+                                    >
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Sessions List Panel -->
+                <div class="lg:col-span-2">
+                    <div class="bg-white p-6 rounded-lg shadow-md">
+                        <h2 class="text-xl font-semibold mb-4">Available Sessions</h2>
+                        
+                        <div id="sessions-list" class="space-y-4">
+                            <!-- Sessions will be listed here -->
+                            <div class="text-gray-600 text-center py-8">
+                                No sessions available
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Load JavaScript files -->
+    <script src="/static/js/charts.js"></script>
+    <script src="/static/js/visualizations.js"></script>
+    <script src="/static/js/session-manager.js"></script>
+    <script src="/static/js/main.js"></script>
+</body>
+</html>

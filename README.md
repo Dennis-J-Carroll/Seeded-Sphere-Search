@@ -1,92 +1,204 @@
-# SeededSphere Transformers
+# Seeded Sphere Search Transformers
 
-A neural network-based search optimization library that uses advanced embedding techniques, including hyperbolic and ellipsoidal transformations, to create high-quality representations for information retrieval.
+This repository contains an implementation of the Seeded Sphere Search algorithm with transformer-based embeddings and additional transformations for enhanced search capabilities.
 
-## Overview
+## Features
 
-SeededSphere Transformers combines multiple geometric approaches to embeddings, particularly for hierarchical and complex data structures:
-
-- **Seeded Sphere Search**: Core search mechanism with spherical embeddings and echo-based relationship mapping
-- **Hyperbolic Transformations**: Specialized embeddings for hierarchical data using the Poincaré ball model
-- **Ellipsoidal Transformations**: Optimized weight matrices for improved retrieval performance
-- **Hybrid Search Engine**: Combines multiple search algorithms with configurable weights
-
-## Key Features
-
-- Dynamic embedding refinement using echo-based relationship mapping
-- Support for hyperbolic geometry to better represent hierarchical data
-- Ellipsoidal transformation for fine-tuning search quality
-- Hybrid search capabilities that combine multiple algorithms
-- Comprehensive evaluation metrics and performance benchmarking
+- **Transformer-Based Embeddings**: Leverage the power of language models for semantic search
+- **Seeded Search**: Use example documents to influence search results
+- **Echo Layer Mechanism**: Advanced echo refinement with vectorized operations and parameter tuning
+- **Ellipsoidal Transformation**: Apply dimension-wise weighting to improve search relevance
+- **Hyperbolic Transformation**: Specialized embeddings for hierarchical relationships
+- **Hybrid Search**: Combine multiple search approaches with optimized weighting
+- **Evaluation Platform**: Analyze, compare, and visualize search results
 
 ## Installation
 
-```bash
-# Clone the repository
-git clone [your-repository-url]
-cd SeededSphere_Transformers
+Clone the repository and install the required dependencies:
 
-# Install dependencies
+```bash
+git clone https://github.com/your-username/SeededSphere_Transformers.git
+cd SeededSphere_Transformers
 pip install -r requirements.txt
 ```
 
-## Usage
+Or install as a package:
 
-### Basic Search Example
-
-```python
-from SeededSphereSearch import SeededSphereSearch
-
-# Initialize search system with documents
-sss = SeededSphereSearch()
-sss.initialize(documents)
-
-# Perform search
-results = sss.search("your query here", top_k=10)
+```bash
+pip install -e .
 ```
 
-### Using Hyperbolic Transformations
+Additional dependencies for the evaluation platform:
 
-```python
-from HyperbolicTransformation import HyperbolicTransformation
-
-# Initialize transformation
-hyperbolic = HyperbolicTransformation(dimensions=384)
-
-# Transform embeddings
-hyperbolic_embeddings = hyperbolic.transform_embeddings(embeddings)
-
-# Calculate similarity scores
-score = hyperbolic.calculate_similarity_score(emb1, emb2)
-```
-
-### Using Ellipsoidal Transformations
-
-```python
-from EllipsoidalTransformation import EllipsoidalTransformation
-
-# Initialize and train
-ellipsoidal = EllipsoidalTransformation(dimensions=384)
-ellipsoidal.train_weights(query_embeddings, relevant_docs, non_relevant_docs)
-
-# Transform query
-transformed_query = ellipsoidal.transform_query(query_embedding)
+```bash
+pip install scikit-learn umap-learn plotly
 ```
 
 ## Project Structure
 
-- `SeededSphereSearch.py`: Main search implementation
-- `HyperbolicTransformation.py`: Hyperbolic space transformation for hierarchical data
-- `EllipsoidalTransformation.py`: Ellipsoidal weight transformation for refined search
-- `HybridSearchEngine.py`: Combines multiple search algorithms
-- `evaluate_search_performance.py`: Metrics and evaluation tools
-- `demo_sss.py`: Demonstration of the search system
-- `Test_ellipsoidal_transform_sci-fi_corpus.py`: Test script for ellipsoidal transformations
+```
+SeededSphere_Transformers/
+├── seededsphere/          # Main package
+│   ├── core/              # Core search algorithm and echo mechanism
+│   ├── transformations/   # Embedding transformation modules
+│   ├── search/            # Search engine implementations
+│   ├── evaluation/        # Evaluation metrics and analysis tools
+│   └── extensions/        # Domain-specific extensions
+├── data/                  # Data storage
+│   ├── corpora/           # Document corpora in JSON format
+│   ├── models/            # Saved models and configurations
+│   └── raw_text/          # Raw text files
+├── examples/              # Example scripts demonstrating features
+├── scripts/               # Utility scripts for data processing
+├── tests/                 # Test cases
+└── docs/                  # Documentation
+```
 
-## Contributing
+## Usage
 
-Contributions welcome! Please feel free to submit a Pull Request.
+### Basic Search
+
+```python
+from seededsphere import SeededSphereSearch
+
+# Initialize the search engine
+search = SeededSphereSearch()
+
+# Add documents
+search.add_document(id="doc1", title="Document 1", content="This is a sample document about AI.")
+search.add_document(id="doc2", title="Document 2", content="Exploring machine learning concepts.")
+
+# Build the index
+search.build_index()
+
+# Perform a search
+results = search.search("artificial intelligence")
+```
+
+### Seeded Search
+
+```python
+# Perform a seeded search
+results = search.seeded_search(query="neural networks", seed_doc_id="doc1")
+```
+
+### Advanced Echo Layer
+
+```python
+from seededsphere import EchoLayer
+import torch
+import numpy as np
+
+# Initialize with custom parameters
+echo_layer = EchoLayer(delta=0.15, freq_scale=0.3, min_layers=1, max_layers=5)
+
+# Apply to embeddings
+embeddings = torch.tensor(your_embeddings).float()
+frequencies = torch.tensor(your_frequencies).float()
+relationship_matrix = torch.tensor(your_relationships).float()
+
+# Apply echo refinement with detailed tracking
+refined_embeddings, evolution_data = echo_layer(
+    embeddings, 
+    frequencies, 
+    relationship_matrix,
+    track_mode='detailed'
+)
+```
+
+### Ellipsoidal Transformation
+
+```python
+from seededsphere import EllipsoidalTransformation
+
+# Initialize the transformation
+transformer = EllipsoidalTransformation(dimensions=384)
+
+# Train weights using relevant/non-relevant examples
+transformer.train_weights(
+    query_embeddings, 
+    relevant_doc_embeddings,
+    non_relevant_doc_embeddings
+)
+
+# Apply to search
+results = search_engine.search(
+    query, 
+    use_ellipsoidal=True, 
+    ellipsoidal_transformer=transformer
+)
+```
+
+### Evaluation
+
+```python
+from seededsphere.evaluation import evaluate_search_performance, perform_echo_layer_analysis
+
+# Evaluate search performance
+metrics = evaluate_search_performance(search_engine, test_data)
+
+# Analyze echo layer impact
+analysis_results = perform_echo_layer_analysis(
+    search_engine, 
+    doc_ids=['doc1', 'doc2', 'doc3'],
+    track_mode='detailed'
+)
+```
+
+### Running Examples
+
+To run the example scripts:
+
+```bash
+# Quick demo
+python examples/quick_demo_sss.py
+
+# Full feature demo
+python examples/demo_sss.py
+
+# Search UI
+python examples/run_search_ui.py --model data/models/sss_model.pkl
+
+# Evaluation platform
+python examples/run_evaluation_platform.py --model data/models/sss_model.pkl
+```
+
+## Evaluation Platform Features
+
+### Analytics
+
+The analytics tab allows you to:
+
+- Analyze search quality with precision-recall curves
+- Calculate metrics like Average Precision and Precision@K
+- Create and use ground truth data for evaluation
+
+### Algorithm Comparison
+
+Compare different search approaches:
+
+- Standard semantic search
+- Seeded search with different seed documents
+- Ellipsoidal and hyperbolic transformations
+- Hybrid search approaches
+
+### Embedding Visualization
+
+Visualize your document embeddings:
+
+- View all documents or query results
+- Choose between t-SNE, PCA, or UMAP visualizations
+- See the relationships in 2D or 3D space
+- Analyze echo refinement impact on embeddings
+
+### Session Management
+
+Track and compare your experiments:
+
+- Save search results and analytics
+- Export and import sessions
+- Compare multiple sessions
 
 ## License
 
-[Add your license information here]
+[MIT License](LICENSE)
