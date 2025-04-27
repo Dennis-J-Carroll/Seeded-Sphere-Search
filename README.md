@@ -3,6 +3,27 @@
 This repository contains an implementation of the Seeded Sphere Search algorithm with transformer-based embeddings and additional transformations for enhanced search capabilities.
 ![sss_imag2](https://github.com/user-attachments/assets/294b8f35-b6c5-4191-9766-e1e5f29d319e)
 
+
+
+
+Seeded Sphere Search — Contextual Geometry for Language Models
+
+This project explores the use of geometric embeddings and their relationship with word context. The goal is to improve a machine’s ability to recognize context without relying solely on explicit explanation.
+
+Today, most LLMs (Large Language Models) operate based on token probabilities, moving from word to word based on parameters like temperature, sampling, and probability distributions. While incredibly effective, this mechanism sometimes struggles with nuance — those subtle, blurry overlaps where human meaning lives.
+
+In this project, I explore an idea:
+
+    What if we treated words as spheres, not just points?
+    Each word has its own space — a radius — and the distance and overlap between spheres define context.
+
+By assigning spheres and distances to words, and layering an echo refinement mechanism, the model gains a form of contextual memory. This approach aims to help AI communicate not just accurately but expressively — moving closer to the way humans intuitively blend meaning, ambiguity, and emotion.
+
+This project is part of a broader vision:
+
+    To create language models that not only speak like us, but think in gradients and shades like we do.
+
+
 ## Features
 
 - **Transformer-Based Embeddings**: Leverage the power of language models for semantic search
