@@ -1,4 +1,4 @@
-# Seeded Sphere Search Transformers
+# Seeded Sphere Search 
 
 This repository contains an implementation of the Seeded Sphere Search algorithm with transformer-based embeddings and additional transformations for enhanced search capabilities.
 ![sss_imag2](https://github.com/user-attachments/assets/294b8f35-b6c5-4191-9766-e1e5f29d319e)
